@@ -6,9 +6,11 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.krediya.project.data.datasource.PostsDataSourceImpl
 import org.krediya.project.data.repository.PostRepositoryImpl
-import org.krediya.project.data.source.remote.HttpClientFactory
-import org.krediya.project.data.source.remote.PostApiService
+import org.krediya.project.data.network.HttpClientFactory
+import org.krediya.project.data.interfaces.PostsDataSourceInterface
+import org.krediya.project.data.network.BaseClient
 import org.krediya.project.domain.repository.PostRepository
 import org.krediya.project.domain.usecase.GetPostsUseCase
 
@@ -22,8 +24,11 @@ val commonModule = module {
     // HTTP Client
     single<HttpClient> { HttpClientFactory.create() }
 
-    // API Service
-    single { PostApiService(get()) }
+    // BaseClient
+    single { BaseClient() }
+
+    // DataSource
+    single<PostsDataSourceInterface> { PostsDataSourceImpl(get()) }
 
     // Repository
     single<PostRepository> { PostRepositoryImpl(get()) }

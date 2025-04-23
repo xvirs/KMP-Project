@@ -3,18 +3,19 @@ package org.krediya.project
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import org.krediya.project.ui.screens.PostsScreen
+import androidx.navigation.compose.rememberNavController
+import org.krediya.project.navegation.AppNavigation
+import org.krediya.project.theme.MyTemplateTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    PostsScreen()
-                }
+            MyTemplateTheme (
+                dynamicColor = true,
+            ) {
+                val navController = rememberNavController()
+                AppNavigation(navController)
             }
         }
     }

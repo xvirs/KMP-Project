@@ -15,13 +15,16 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+            implementation("androidx.compose.material3:material3:1.0.0")
+            implementation("androidx.navigation:navigation-compose:2.7.7")
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)

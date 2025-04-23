@@ -1,4 +1,4 @@
-package org.krediya.project.viewmodel
+package org.krediya.project.screens.screen1
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import org.krediya.project.domain.model.Post
 import org.krediya.project.domain.usecase.GetPostsUseCase
 
-class PostViewModel(
+class ScreenOneViewModel(
     private val getPostsUseCase: GetPostsUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PostUiState>(PostUiState.Loading)

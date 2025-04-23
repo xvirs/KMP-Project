@@ -1,4 +1,4 @@
-package org.krediya.project.ui.screens
+package org.krediya.project.screens.screen1
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,12 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import org.krediya.project.domain.model.Post
-import org.krediya.project.viewmodel.PostUiState
-import org.krediya.project.viewmodel.PostViewModel
 
 @Composable
-fun PostsScreen(
-    viewModel: PostViewModel = koinViewModel()
+fun ScreenOne(
+    viewModel: ScreenOneViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

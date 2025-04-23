@@ -8,7 +8,9 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.krediya.project.di.commonModule
 import org.krediya.project.di.platformModule
-import org.krediya.project.viewmodel.PostViewModel
+import org.krediya.project.screens.screen1.ScreenOneViewModel
+import org.krediya.project.screens.screen2.ScreenTwoViewModel
+import org.krediya.project.screens.screen3.ScreenThreeViewModel
 
 class MyApplication : Application() {
     override fun onCreate() {
@@ -26,6 +28,8 @@ class MyApplication : Application() {
     }
 
     private val viewModelModule = module {
-        viewModel { PostViewModel(get()) }
+        viewModel { ScreenOneViewModel(get()) }
+        viewModel { ScreenTwoViewModel(get()) }
+        viewModel { ScreenThreeViewModel() }
     }
 }

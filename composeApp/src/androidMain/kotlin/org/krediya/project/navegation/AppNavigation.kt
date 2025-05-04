@@ -15,10 +15,6 @@ fun AppNavigation(navController: NavHostController){
     ){
         composable(
             route = "main",
-            enterTransition = { null },
-            exitTransition = { null },
-            popEnterTransition = { null },
-            popExitTransition = { null }
         ) {
             Scaffold()
         }

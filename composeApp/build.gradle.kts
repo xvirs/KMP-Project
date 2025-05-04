@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 kotlin {
@@ -68,6 +70,10 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.android.gms:play-services-measurement:22.4.0")
+    implementation("com.google.android.gms:play-services-measurement-base:22.4.0")
+    implementation("com.google.android.gms:play-services-measurement-sdk:22.4.0")
 }
-

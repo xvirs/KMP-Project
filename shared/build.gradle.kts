@@ -48,6 +48,9 @@ kotlin {
 
         androidMain.dependencies {
             implementation("io.ktor:ktor-client-android:2.3.7")
+
+            implementation("com.google.firebase:firebase-analytics-ktx:22.0.0")
+            implementation("com.google.firebase:firebase-crashlytics-ktx:18.4.0")
         }
 
         iosMain.dependencies {
@@ -66,4 +69,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+dependencies {
+    implementation(libs.play.services.measurement.api)
+    implementation(libs.firebase.common.ktx)
 }

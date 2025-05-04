@@ -1,4 +1,4 @@
-package org.krediya.project.domain.repository
+package org.krediya.project.domain.interfaces
 
 import org.krediya.project.domain.model.Post
 

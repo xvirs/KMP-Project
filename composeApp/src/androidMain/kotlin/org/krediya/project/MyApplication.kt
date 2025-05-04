@@ -1,6 +1,7 @@
 package org.krediya.project
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -16,6 +17,10 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // Inicializar Firebase
+        FirebaseApp.initializeApp(this)
+
+        // Inicializar Koin
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)

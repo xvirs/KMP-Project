@@ -10,8 +10,13 @@ import org.krediya.project.data.repository.PostRepositoryImpl
 import org.krediya.project.data.network.HttpClientFactory
 import org.krediya.project.data.interfaces.PostsDataSourceInterface
 import org.krediya.project.data.network.BaseClient
-import org.krediya.project.domain.repository.PostRepository
+import org.krediya.project.domain.interfaces.PostRepository
 import org.krediya.project.domain.usecase.GetPostsUseCase
+import org.krediya.project.shared.analytics.AnalyticsManager
+import org.krediya.project.shared.analytics.AnalyticsService
+import org.krediya.project.shared.analytics.CrashlyticsService
+import org.krediya.project.shared.analytics.FirebaseAnalyticsService
+import org.krediya.project.shared.analytics.FirebaseCrashlyticsService
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
@@ -20,6 +25,12 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
 
 // Módulo común para ambas plataformas
 val commonModule = module {
+
+    // Analytics y Crashlytics
+    single<AnalyticsService> { FirebaseAnalyticsService() }
+    single<CrashlyticsService> { FirebaseCrashlyticsService() }
+    single { AnalyticsManager(get(), get()) }
+
     // HTTP Client
     single<HttpClient> { HttpClientFactory.create() }
 

@@ -9,9 +9,9 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.krediya.project.di.commonModule
 import org.krediya.project.di.platformModule
-import org.krediya.project.screens.screen1.ScreenOneViewModel
-import org.krediya.project.screens.screen2.ScreenTwoViewModel
-import org.krediya.project.screens.screen3.ScreenThreeViewModel
+import org.krediya.project.presentation.screens.screen1.ScreenOneViewModel
+import org.krediya.project.presentation.screens.screen2.ScreenTwoViewModel
+import org.krediya.project.presentation.screens.screen3.ScreenThreeViewModel
 
 class MyApplication : Application() {
     override fun onCreate() {

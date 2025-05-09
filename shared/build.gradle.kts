@@ -36,7 +36,7 @@ kotlin {
     sourceSets {
         // Dependencias comunes para pruebas
         commonTest.dependencies {
-            implementation("io.insert-koin:koin-test:3.5.0")
+            implementation(libs.koin.test)
             implementation(libs.kotlin.test)
             implementation(libs.kotlin.test.common)
             implementation(libs.mockk.common)
@@ -83,7 +83,6 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
 
-        // Dependencias específicas para pruebas de iOS
         iosTest.dependencies {
             implementation(libs.mockk.common)
         }

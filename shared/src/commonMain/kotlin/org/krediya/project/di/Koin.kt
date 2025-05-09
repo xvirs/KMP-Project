@@ -17,6 +17,7 @@ import org.krediya.project.shared.analytics.AnalyticsService
 import org.krediya.project.shared.analytics.CrashlyticsService
 import org.krediya.project.shared.analytics.FirebaseAnalyticsService
 import org.krediya.project.shared.analytics.FirebaseCrashlyticsService
+import org.krediya.project.shared.analytics.createPlatformAnalyticsFactory
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
@@ -27,6 +28,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
 val commonModule = module {
 
     // Analytics y Crashlytics
+    single { createPlatformAnalyticsFactory() }
     single<AnalyticsService> { FirebaseAnalyticsService() }
     single<CrashlyticsService> { FirebaseCrashlyticsService() }
     single { AnalyticsManager(get(), get()) }

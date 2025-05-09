@@ -4,6 +4,6 @@ import org.krediya.project.domain.model.Post
 import org.krediya.project.domain.interfaces.PostRepository
 import org.krediya.project.util.StatusResult
 
-class GetPostsUseCase(val postRepository: PostRepository) {
+open class GetPostsUseCase(val postRepository: PostRepository) {
     suspend operator fun invoke(): StatusResult<List<Post>> = postRepository.getPosts()
 }

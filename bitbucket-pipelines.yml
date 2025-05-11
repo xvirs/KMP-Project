@@ -1,0 +1,119 @@
+image: openjdk:17
+
+definitions:
+  caches:
+    gradle: ~/.gradle
+    android-gradle: ~/.android/build-cache
+
+  steps:
+    - step: &build-debug
+        name: Build Debug
+        caches:
+          - gradle
+          - android-gradle
+        script:
+          - apt-get update && apt-get install -y curl unzip
+          - export ANDROID_HOME=/opt/android-sdk
+          - mkdir -p ${ANDROID_HOME}
+          - curl -o android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          - unzip android-sdk.zip -d ${ANDROID_HOME}
+          - mkdir -p ${ANDROID_HOME}/cmdline-tools/latest
+          - mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - mv ${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
+          - ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33"
+          # Configuración de Google Services para debug
+          - mkdir -p composeApp/src
+          - echo $GOOGLE_SERVICES_JSON | base64 -d > composeApp/src/google-services.json
+          - chmod +x ./gradlew
+          - ./gradlew :composeApp:assembleDebug
+        artifacts:
+          - composeApp/build/outputs/apk/debug/*.apk
+          
+    - step: &unit-tests
+        name: Run Unit Tests
+        caches:
+          - gradle
+          - android-gradle
+        script:
+          - apt-get update && apt-get install -y curl unzip
+          - export ANDROID_HOME=/opt/android-sdk
+          - mkdir -p ${ANDROID_HOME}
+          - curl -o android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          - unzip android-sdk.zip -d ${ANDROID_HOME}
+          - mkdir -p ${ANDROID_HOME}/cmdline-tools/latest
+          - mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - mv ${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
+          - ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33"
+          # Configuración de Google Services para tests
+          - mkdir -p composeApp/src
+          - echo $GOOGLE_SERVICES_JSON | base64 -d > composeApp/src/google-services.json
+          - chmod +x ./gradlew
+          - ./gradlew test
+        artifacts:
+          - composeApp/build/reports/tests/**
+          
+    - step: &build-release
+        name: Build Release
+        caches:
+          - gradle
+          - android-gradle
+        script:
+          - apt-get update && apt-get install -y curl unzip
+          - export ANDROID_HOME=/opt/android-sdk
+          - mkdir -p ${ANDROID_HOME}
+          - curl -o android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          - unzip android-sdk.zip -d ${ANDROID_HOME}
+          - mkdir -p ${ANDROID_HOME}/cmdline-tools/latest
+          - mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - mv ${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ || true
+          - yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
+          - ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33"
+          # Configuración de Google Services para release
+          - mkdir -p composeApp/src
+          - echo $GOOGLE_SERVICES_JSON | base64 -d > composeApp/src/google-services.json
+          # Configuración de keystore
+          - mkdir -p $BITBUCKET_CLONE_DIR/keystore
+          - echo $KEYSTORE_FILE | base64 -d > $BITBUCKET_CLONE_DIR/keystore/krediya-keystore.jks
+          - chmod +x ./gradlew
+          - chmod +x ./scripts/setup_signing_config.sh
+          - ./scripts/setup_signing_config.sh
+          - ./gradlew :composeApp:assembleRelease
+        artifacts:
+          - composeApp/build/outputs/apk/release/*.apk
+          
+    - step: &deploy-firebase
+        name: Deploy to Firebase App Distribution
+        script:
+          - apt-get update && apt-get install -y curl npm
+          - npm install -g firebase-tools
+          - export APK_PATH=$(find composeApp/build/outputs/apk/release -name "*.apk" | head -1)
+          - firebase appdistribution:distribute $APK_PATH --app $FIREBASE_APP_ID --groups "testers" --token $FIREBASE_TOKEN --release-notes "Build from Bitbucket Pipelines"
+
+pipelines:
+  default:
+    - step: *unit-tests
+    - step: *build-debug
+    
+  branches:
+    develop:
+      - step: *unit-tests
+      - step: *build-debug
+      - step: *build-release
+      
+    master:
+      - step: *unit-tests
+      - step: *build-release
+      - step: *deploy-firebase
+      
+  pull-requests:
+    '**':
+      - step: *unit-tests
+      - step: *build-debug
+      
+  tags:
+    v*.*.*:
+      - step: *unit-tests
+      - step: *build-release
+      - step: *deploy-firebase

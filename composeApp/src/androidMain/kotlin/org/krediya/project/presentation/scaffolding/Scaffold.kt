@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,8 +26,9 @@ import org.krediya.project.presentation.screens.screen3.ScreenThree
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Scaffold() {
-    val navController = rememberNavController()
+fun Scaffold(
+    navController: NavHostController = rememberNavController()
+) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)

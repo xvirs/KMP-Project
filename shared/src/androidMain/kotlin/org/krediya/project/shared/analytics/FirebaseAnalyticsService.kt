@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 
-actual class FirebaseAnalyticsService : AnalyticsService {
+actual open class FirebaseAnalyticsService : AnalyticsService {
     private val analytics = Firebase.analytics
 
     actual override fun logEvent(name: String, params: Map<String, Any>) {

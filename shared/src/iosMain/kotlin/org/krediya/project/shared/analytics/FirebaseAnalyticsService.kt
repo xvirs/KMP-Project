@@ -1,6 +1,6 @@
 package org.krediya.project.shared.analytics
 
-actual class FirebaseAnalyticsService : AnalyticsService {
+actual open class FirebaseAnalyticsService : AnalyticsService {
     actual override fun logEvent(name: String, params: Map<String, Any>) {
         // Implementación para iOS
         println("Analytics event: $name, params: $params")

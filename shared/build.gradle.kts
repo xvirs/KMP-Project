@@ -69,6 +69,8 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlin.test.junit)
             implementation(libs.mockk)
+            implementation(libs.robolectric)
+            implementation(libs.androidx.test.junit)
         }
 
         // Dependencias específicas para Android
@@ -108,4 +110,6 @@ android {
 dependencies {
     implementation(libs.play.services.measurement.api)
     implementation(libs.firebase.common.ktx)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.core)
 }

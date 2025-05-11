@@ -14,6 +14,23 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
+/**
+ * Resolución de conflictos de versiones.
+ * Forzamos versiones específicas para evitar problemas en tiempo de compilación.
+ */
+configurations.all {
+    resolutionStrategy {
+        // Forzar versiones específicas de kotlin-test para resolver conflictos
+        force("org.jetbrains.kotlin:kotlin-test:1.9.0")
+        force("org.jetbrains.kotlin:kotlin-test-common:1.9.0")
+        force("org.jetbrains.kotlin:kotlin-test-annotations-common:1.9.0")
+        force("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
+    }
+}
+
+/**
+ * Configuración del compilador Kotlin y fuentes para múltiples plataformas.
+ */
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -23,7 +40,7 @@ kotlin {
     }
 
     sourceSets {
-        // Configuración de dependencias para Android Main
+        // ======== ANDROID MAIN ========
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -32,26 +49,34 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
         }
 
-        // Configuración de dependencias comunes
+        // ======== COMMON MAIN ========
         commonMain.dependencies {
+            // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            // AndroidX ViewModel
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+
+            // Módulos internos
             implementation(projects.shared)
         }
 
-        // Configuración para tests de Android instrumentados
+        // ======== ANDROID INSTRUMENTED TEST ========
         androidInstrumentedTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
 }
 
+/**
+ * Configuración específica para Android.
+ */
 android {
     namespace = "org.krediya.project"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -62,12 +87,6 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
     }
 
     buildTypes {
@@ -81,6 +100,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -92,56 +117,49 @@ android {
     }
 }
 
-// Configuración de dependencias externas no incluidas en sourceSets
+/**
+ * Dependencias adicionales para el proyecto.
+ * Organizadas por categorías para mejor mantenimiento.
+ */
 dependencies {
-    // Firebase y Google Play Services
+    // ======== FIREBASE Y GOOGLE PLAY SERVICES ========
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.play.services.measurement)
     implementation(libs.play.services.measurement.base)
     implementation(libs.play.services.measurement.sdk)
-    implementation(libs.androidx.ui.test.junit4.android)
-    implementation(libs.androidx.navigation.testing) // Podría moverse a testImplementation
 
-    // Dependencias de testing
-    // JUnit y Mockk
+    // ======== NAVEGACIÓN Y TESTING UI ========
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.androidx.navigation.testing)
+
+    // ======== TESTING UNITARIO ========
+    // JUnit, Mockk y frameworks de testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.android)
 
-    // Turbine para testing de flows
+    // Testing de flujos y corrutinas
     testImplementation(libs.turbine)
-
-    // Coroutines para pruebas
     testImplementation(libs.kotlinx.coroutines.test.v180)
 
-    // Koin para pruebas
-    implementation(libs.koin.test)
+    // Koin para testing
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit4)
-    testImplementation(libs.koin.androidx.compose)
 
-    // Mockito Kotlin
+    // API de Koin para runtime
+    implementation(libs.koin.test) // Considerar si esto es realmente necesario en runtime
+
+    // Mockito
     testImplementation(libs.mockito.kotlin)
 
-    // Compose UI Testing
+    // ======== TESTING DE UI ========
+    // Framework de testing de Compose UI
     testImplementation(libs.androidx.ui.test)
     testImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Robolectric para tests que requieran contexto Android
+    // Robolectric para simulación de Android en JVM
     testImplementation(libs.robolectric)
-
-    // Las siguientes dependencias deberían estar solo en testImplementation
-    // y ya están incluidas arriba o en commonMain/androidMain
-    // NO es necesario incluirlas aquí de nuevo:
-    // implementation(libs.koin.test) - Ya está en testImplementation
-    // implementation(libs.kotlin.test) - Ya está en testImplementation
-    // implementation(libs.kotlin.test.common) - Redundante
-    // implementation(libs.mockk.common) - Redundante con mockk
-    // implementation(libs.kotlinx.coroutines.test) - Ya está en testImplementation
-    // implementation(libs.slf4j.simple) - Solo necesaria para tests
-    // implementation(libs.turbine) - Ya está en testImplementation
-    // implementation(libs.ktor.client.mock) - Solo necesaria para tests
 }

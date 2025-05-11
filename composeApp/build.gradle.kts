@@ -89,9 +89,39 @@ android {
         versionName = "1.0"
     }
 
+    // IMPORTANTE: Las signingConfigs deben definirse ANTES de los buildTypes
+    signingConfigs {
+        signingConfigs {
+            create("release") {
+                storeFile = file("../krediya-keystore.jks")
+                storePassword = "krediya15"
+                keyAlias = "krediya"
+                keyPassword = "krediya15"
+            }
+        }
+
+        buildTypes {
+            getByName("release") {
+                isMinifyEnabled = false
+                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+                signingConfig = signingConfigs.getByName("release")
+
+
+            }
+        }
+    }
+
     buildTypes {
-        getByName("release") {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
+
+        debug {
             isMinifyEnabled = false
+            // Opcional: usar la misma configuración para debug
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -162,4 +192,5 @@ dependencies {
 
     // Robolectric para simulación de Android en JVM
     testImplementation(libs.robolectric)
+    implementation(libs.slf4j.simple)
 }

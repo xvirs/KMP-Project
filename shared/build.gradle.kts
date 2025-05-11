@@ -1,14 +1,18 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+/**
+ * Archivo de configuración de Gradle para el módulo shared.
+ * Define la configuración del proyecto multiplatforma para Android e iOS.
+ */
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    //agregar serialization
-    kotlin("plugin.serialization") version "1.9.0"
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
+    // Configuración para Android
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -16,6 +20,7 @@ kotlin {
         }
     }
 
+    // Configuración para iOS
     listOf(
         iosX64(),
         iosArm64(),
@@ -26,51 +31,85 @@ kotlin {
             isStatic = true
         }
     }
-    val ktorVersion = "2.3.7"
-    val serializationVersion = "1.6.2"
+
+    // Configuración de los source sets y sus dependencias
     sourceSets {
+        // Dependencias comunes para pruebas
+        commonTest.dependencies {
+            implementation(libs.koin.test)
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.common)
+            implementation(libs.mockk.common)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.slf4j.simple)
+            implementation(libs.turbine)
+            implementation(libs.ktor.client.mock)
+        }
+
+        // Dependencias comunes para la implementación principal
         commonMain.dependencies {
-            // Serializacion
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+            // Serialización
+            implementation(libs.kotlinx.serialization.json)
 
             // Ktor
-            implementation("io.ktor:ktor-client-core:$ktorVersion")
-            implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-            implementation("io.ktor:ktor-client-logging:$ktorVersion")
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
 
             // Koin
-            implementation("io.insert-koin:koin-core:3.5.0")
+            implementation(libs.koin.core)
 
             // Coroutines
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+            implementation(libs.kotlinx.coroutines.core)
         }
 
+        // Dependencias específicas para pruebas de Android
+        androidUnitTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.junit)
+            implementation(libs.mockk)
+            implementation(libs.robolectric)
+            implementation(libs.androidx.test.junit)
+        }
+
+        // Dependencias específicas para Android
         androidMain.dependencies {
-            implementation("io.ktor:ktor-client-android:2.3.7")
-
-            implementation("com.google.firebase:firebase-analytics-ktx:22.0.0")
-            implementation("com.google.firebase:firebase-crashlytics-ktx:18.4.0")
+            implementation(libs.ktor.client.android)
+            implementation(libs.firebase.analytics.ktx)
+            implementation(libs.firebase.crashlytics.ktx)
         }
 
+        // Dependencias específicas para iOS
         iosMain.dependencies {
-            implementation("io.ktor:ktor-client-darwin:2.3.7")
+            implementation(libs.ktor.client.darwin)
+        }
+
+        iosTest.dependencies {
+            implementation(libs.mockk.common)
         }
     }
 }
 
+// Configuración de Android
 android {
     namespace = "org.krediya.project.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+
+// Dependencias del proyecto a nivel de módulo
 dependencies {
     implementation(libs.play.services.measurement.api)
     implementation(libs.firebase.common.ktx)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.core)
 }

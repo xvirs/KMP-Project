@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "326763922709",
+    "project_id": "filmdex-76f4a",
+    "storage_bucket": "filmdex-76f4a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326763922709:android:081adc57d733f2eabbd51c",
+        "android_client_info": {
+          "package_name": "com.project.mytemplate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7RoseYwaaarzlCddbGBFvtatxnsi6zQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326763922709:android:7e13bfb29246f1a5bbd51c",
+        "android_client_info": {
+          "package_name": "com.proyect.movielists"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7RoseYwaaarzlCddbGBFvtatxnsi6zQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326763922709:android:8791765a0dcff085bbd51c",
+        "android_client_info": {
+          "package_name": "org.krediya.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7RoseYwaaarzlCddbGBFvtatxnsi6zQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

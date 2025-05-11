@@ -10,12 +10,14 @@ class PostRepositoryImpl(
     private val dataSource: PostsDataSourceInterface
 ) : PostRepository {
 
-    override suspend fun getPosts(): List<Post> {
+    override suspend fun getPosts(): StatusResult<List<Post>> {
         return when (val result = dataSource.getPosts()) {
-            is StatusResult.Success -> result.data.map { it.toDomain() }
+            is StatusResult.Success -> {
+                val posts = result.data.map { it.toDomain() }
+                StatusResult.Success(posts)
+            }
             is StatusResult.Error -> {
-                println("Error en Repository: ${result.message}")
-                emptyList()
+                StatusResult.Error(result.message)
             }
         }
     }

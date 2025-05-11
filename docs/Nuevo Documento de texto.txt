@@ -1,0 +1,64 @@
+# Configuración de secretos en Bitbucket (Actualizada)
+
+Para que el pipeline funcione correctamente, necesitas configurar los siguientes secretos en Bitbucket. Sigue estos pasos:
+
+1. Ve a tu repositorio en Bitbucket
+2. Navega a **Repository settings** → **Repository variables**
+3. Añade las siguientes variables seguras (marca la opción **Secured**):
+
+## Variables para el Keystore
+
+| Variable | Descripción | Valor |
+|----------|-------------|-------|
+| `KEYSTORE_FILE` | Contenido del archivo keystore en base64 | Resultado de `base64 -w 0 krediya-keystore.jks` |
+| `KEYSTORE_PASSWORD` | Contraseña del keystore | krediya15 |
+| `KEYSTORE_ALIAS` | Alias de la clave | krediya |
+| `KEY_PASSWORD` | Contraseña de la clave | krediya15 |
+
+## Variables para Firebase
+
+| Variable | Descripción | Valor |
+|----------|-------------|-------|
+| `FIREBASE_TOKEN` | Token de autenticación de Firebase | Obtenido con `firebase login:ci` |
+| `FIREBASE_APP_ID` | ID de la aplicación en Firebase | Encontrado en la configuración de tu proyecto en Firebase |
+| `GOOGLE_SERVICES_JSON` | Contenido del archivo google-services.json en base64 | Resultado de `base64 -w 0 google-services.json` |
+
+## Instrucciones para generar el KEYSTORE_FILE
+
+Para convertir tu keystore a formato base64 y añadirlo como secreto:
+
+1. Abre una terminal
+2. Ejecuta el siguiente comando:
+   ```bash
+   base64 -w 0 krediya-keystore.jks > keystore_base64.txt
+   ```
+3. Copia el contenido del archivo `keystore_base64.txt`
+4. Pégalo como valor de la variable `KEYSTORE_FILE` en Bitbucket
+
+## Instrucciones para generar el GOOGLE_SERVICES_JSON
+
+Para convertir tu archivo de configuración de Firebase a formato base64:
+
+1. Abre una terminal
+2. Ejecuta el siguiente comando:
+   ```bash
+   base64 -w 0 google-services.json > google_services_base64.txt
+   ```
+3. Copia el contenido del archivo `google_services_base64.txt`
+4. Pégalo como valor de la variable `GOOGLE_SERVICES_JSON` en Bitbucket
+
+## Instrucciones para generar el FIREBASE_TOKEN
+
+1. Instala la CLI de Firebase:
+   ```bash
+   npm install -g firebase-tools
+   ```
+2. Inicia sesión y genera un token CI:
+   ```bash
+   firebase login
+   firebase login:ci
+   ```
+3. Copia el token generado
+4. Pégalo como valor de la variable `FIREBASE_TOKEN` en Bitbucket
+
+> **⚠️ IMPORTANTE**: Nunca almacenes estos valores directamente en el código o en archivos de configuración sin cifrar en el repositorio. Siempre utiliza variables seguras en Bitbucket.

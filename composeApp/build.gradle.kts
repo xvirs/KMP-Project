@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.io.FileInputStream
 
 /**
  * Archivo de configuración de Gradle para el módulo composeApp.
@@ -12,6 +14,17 @@ plugins {
     alias(libs.plugins.composeCompiler)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    // Descomenta la siguiente línea si necesitas utilizar Baseline Profiles
+    // id("androidx.baselineprofile")
+}
+
+/**
+ * Cargar propiedades locales para configuración de firma segura
+ */
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 /**
@@ -89,38 +102,52 @@ android {
         versionName = "1.0"
     }
 
+    // Verificación de deshabilitar Baseline Profiles para CI/CD
+    val disableBaselineProfiles = project.findProperty("disableBaselineProfiles")?.toString()?.toBoolean() ?: false
+
+    buildFeatures {
+        // Configuración condicional de compose
+        compose = true
+    }
+
     // IMPORTANTE: Las signingConfigs deben definirse ANTES de los buildTypes
     signingConfigs {
-        signingConfigs {
-            create("release") {
-                storeFile = file("../krediya-keystore.jks")
-                storePassword = "krediya15"
-                keyAlias = "krediya"
-                keyPassword = "krediya15"
-            }
+        // Configuración de release mejorada para CI/CD
+        create("release") {
+            // Intentar cargar desde local.properties (para CI/CD) o usar valores predeterminados (para desarrollo local)
+            val keystoreFile = localProperties["krediya.keystore.file"]?.toString() ?: "../krediya-keystore.jks"
+            storeFile = file(keystoreFile)
+
+            // Preferir valores de local.properties (CI/CD) o usar valores predeterminados
+            storePassword = localProperties["krediya.keystore.password"]?.toString() ?: "krediya15"
+            keyAlias = localProperties["krediya.key.alias"]?.toString() ?: "krediya"
+            keyPassword = localProperties["krediya.key.password"]?.toString() ?: "krediya15"
         }
 
-        buildTypes {
-            getByName("release") {
-                isMinifyEnabled = false
-                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-                signingConfig = signingConfigs.getByName("release")
-
-
-            }
+        // El debug SigningConfig ya existe por defecto, solo lo configuramos
+        getByName("debug") {
+            storeFile = file("../krediya-keystore.jks")
+            storePassword = "krediya15"
+            keyAlias = "krediya"
+            keyPassword = "krediya15"
         }
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+
+            // Si estás usando Baseline Profiles y quieres deshabilitarlo en CI/CD:
+            if (disableBaselineProfiles) {
+                println("Baseline Profiles deshabilitados para el build de Release")
+            }
         }
 
-        debug {
+        getByName("debug") {
             isMinifyEnabled = false
-            // Opcional: usar la misma configuración para debug
+            applicationIdSuffix = ".debug"
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -193,4 +220,7 @@ dependencies {
     // Robolectric para simulación de Android en JVM
     testImplementation(libs.robolectric)
     implementation(libs.slf4j.simple)
+
+    // Baseline Profile - Descomentar si necesitas utilizar Baseline Profiles
+    // baselineProfile(project(":baselineprofile"))
 }
